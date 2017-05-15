@@ -122,6 +122,12 @@ namespace SDDM {
             if (!dir.exists(session))
                 continue;
 
+             // Skip symlinks that point to the same directory,
+             // they will be visited under the real name
+             QFileInfo fi_link(dir, session);
+             if (fi_link.isSymLink() && dir.canonicalPath() == fi_link.canonicalPath())
+                 continue;
+
             Session *si = new Session(type, session);
             bool execAllowed = true;
             QFileInfo fi(si->tryExec());
