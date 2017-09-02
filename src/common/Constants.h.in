@@ -37,6 +37,7 @@
 #define SYSTEM_CONFIG_DIR           "@SYSTEM_CONFIG_DIR@"
 
 #define LOG_FILE                    "@LOG_FILE@"
+#define PID_FILE                    "@PID_FILE@"
 
 #define UID_MIN                     @UID_MIN@
 #define UID_MAX                     @UID_MAX@

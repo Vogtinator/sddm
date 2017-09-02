@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QHostInfo>
 #include <QTimer>
+#include <QFile>
 
 #include <iostream>
 #include <locale1_interface.h>
@@ -47,6 +48,16 @@ namespace SDDM {
 
         // log message
         qDebug() << "Initializing...";
+
+        // Write PID File
+        if ( ! QString(QStringLiteral(PID_FILE)).isEmpty() ) {
+            QFile pidFile(QStringLiteral(PID_FILE));
+            QString pid = QString::number(QCoreApplication::applicationPid());
+            if ( pidFile.open(QIODevice::WriteOnly | QIODevice::Text) ) {
+                pidFile.write(pid.toLatin1().data(), qstrlen(pid.toLatin1().data()));
+                pidFile.close();
+            }
+        }
 
         // set testing parameter
         m_testing = (arguments().indexOf(QStringLiteral("--test-mode")) != -1);
