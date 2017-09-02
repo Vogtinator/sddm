@@ -35,6 +35,7 @@
 #define CONFIG_FILE                 "@CONFIG_FILE@"
 #define CONFIG_DIR                  "@CONFIG_DIR@"
 #define SYSTEM_CONFIG_DIR           "@SYSTEM_CONFIG_DIR@"
+#define DISPLAY_MANAGER_CONFIG_FILE "@DISPLAY_MANAGER_CONFIG_FILE@"
 
 #define LOG_FILE                    "@LOG_FILE@"
 #define PID_FILE                    "@PID_FILE@"

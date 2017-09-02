@@ -35,6 +35,7 @@
 #include <QFile>
 #include <QTimer>
 #include <QLocalSocket>
+#include <QSettings>
 
 #include <pwd.h>
 #include <unistd.h>
@@ -239,6 +240,11 @@ namespace SDDM {
 
         // log message
         qDebug() << "Display server started.";
+
+        QSettings sysconfSettings(QStringLiteral(DISPLAY_MANAGER_CONFIG_FILE), QSettings::NativeFormat);
+        QString sysconfigUser = sysconfSettings.value(QStringLiteral("DISPLAYMANAGER_AUTOLOGIN"), QStringLiteral("")).toString();
+
+        mainConfig.Autologin.User.set(sysconfigUser);
 
         if ((daemonApp->first || mainConfig.Autologin.Relogin.get()) &&
             !mainConfig.Autologin.User.get().isEmpty()) {

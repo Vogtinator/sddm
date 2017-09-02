@@ -101,14 +101,15 @@ namespace SDDM {
 
         Section(Autologin,
             Entry(User,                QString,     QString(),                                  _S("Username for autologin session"));
-            Entry(Session,             QString,     QString(),                                  _S("Name of session file for autologin session (if empty try last logged in)"));
+            Entry(Session,             QString,     _S("default.desktop"),                      _S("Name of session file for autologin session (if empty try last logged in)"));
+
             Entry(Relogin,             bool,        false,                                      _S("Whether sddm should automatically log back into sessions when they exit"));
         );
     );
 
     Config(StateConfig, []()->QString{auto tmp = getpwnam("sddm"); return tmp ? QString::fromLocal8Bit(tmp->pw_dir) : QStringLiteral(STATE_DIR);}().append(QStringLiteral("/state.conf")), QString(), QString(),
         Section(Last,
-            Entry(Session,         QString,     QString(),                                      _S("Name of the session for the last logged-in user.\n"
+            Entry(Session,         QString,     _S("/usr/share/xsessions/default.desktop"),     _S("Name of the session for the last logged-in user.\n"
                                                                                                    "This session will be preselected when the login screen appears."));
             Entry(User,            QString,     QString(),                                      _S("Name of the last logged-in user.\n"
                                                                                                    "This user will be preselected when the login screen appears"));
