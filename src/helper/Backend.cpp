@@ -27,6 +27,7 @@
 #include "UserSession.h"
 
 #include <QtCore/QProcessEnvironment>
+#include <QtNetwork/QHostInfo>
 
 #include <pwd.h>
 
@@ -73,6 +74,7 @@ namespace SDDM {
             env.insert(QStringLiteral("SHELL"), QString::fromLocal8Bit(pw->pw_shell));
             env.insert(QStringLiteral("USER"), QString::fromLocal8Bit(pw->pw_name));
             env.insert(QStringLiteral("LOGNAME"), QString::fromLocal8Bit(pw->pw_name));
+            env.insert(QStringLiteral("XAUTHLOCALHOSTNAME"), QHostInfo::localHostName());
 #if defined(Q_OS_FREEBSD)
         /* get additional environment variables via setclassenvironment();
             this needs to be done here instead of in UserSession::setupChildProcess
