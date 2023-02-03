@@ -60,8 +60,7 @@ QString XorgUserDisplayServer::command(Display *display)
              << QStringLiteral("-seat") << display->seat()->name()
              << QStringLiteral("-noreset")
              << QStringLiteral("-keeptty")
-             << QStringLiteral("-novtswitch")
-             << QStringLiteral("-verbose") << QStringLiteral("3");
+             << QStringLiteral("-novtswitch");
     }
 
     return args.join(QLatin1Char(' '));
