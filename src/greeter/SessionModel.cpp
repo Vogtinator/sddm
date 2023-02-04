@@ -136,6 +136,15 @@ namespace SDDM {
         sessions.removeDuplicates();
         for (auto& session : qAsConst(sessions)) {
             Session *si = new Session(type, session);
+
+            // Skip symlinks that point to the same directory,
+            // they will be visited under the real name
+            QFileInfo fi_link(si->fileName());
+            if (fi_link.isSymLink() && fi_link.canonicalPath() == si->directory().path()) {
+                delete si;
+                continue;
+            }
+
             bool execAllowed = true;
             QFileInfo fi(si->tryExec());
             if (fi.isAbsolute()) {
@@ -164,8 +173,10 @@ namespace SDDM {
             }
         }
         // find out index of the last session
+        const QString canonicalLastSession = QFileInfo(stateConfig.Last.Session.get()).canonicalFilePath();
         for (int i = 0; i < d->sessions.size(); ++i) {
-            if (d->sessions.at(i)->fileName() == stateConfig.Last.Session.get()) {
+            const QString canonicalSession = QFileInfo(d->sessions.at(i)->fileName()).canonicalFilePath();
+            if (canonicalSession == canonicalLastSession) {
                 d->lastIndex = i;
                 break;
             }
