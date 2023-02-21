@@ -3,8 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - master
-      - develop
+      - b-ci
   pull_request:
     branches:
       - master
@@ -20,25 +19,25 @@ jobs:
       fail-fast: false
       matrix:
         container-image:
-          - "quay.io/fedora/fedora:rawhide"
-          - "quay.io/centos/centos:stream9"
-          - "registry.opensuse.org/opensuse/tumbleweed-dnf"
-          - "docker.io/library/ubuntu:22.04"
+          - "registry.opensuse.org/opensuse/tumbleweed"
+          - "registry.suse.com/bci/bci-base:15.4"
         compiler:
           - gcc
-          - clang
         pam:
           - ON
-          - OFF
     runs-on: ubuntu-latest
 
     container:
       image: ${{ matrix.container-image }}
 
     steps:
+      - name: Dependencies (zypper)
+        if: contains(matrix.container-image, 'suse')
+        run: |
+          zypper --non-interactive in git-core gcc-c++ cmake make pam-devel pkgconfig "pkgconfig(libsystemd)" "pkgconfig(xcb-xkb)" "pkgconfig(Qt5Quick)" "pkgconfig(Qt5Test)" extra-cmake-modules
       - uses: actions/checkout@v3
-      - name: Dependencies (rpm-type)
-        if: ${{ contains(matrix.container-image, 'fedora') || contains(matrix.container-image, 'centos') || contains(matrix.container-image, 'opensuse') }}
+      - name: Dependencies (dnf)
+        if: ${{ contains(matrix.container-image, 'fedora') || contains(matrix.container-image, 'centos') }}
         run: |
           set -x
           dnf --assumeyes install dnf-plugins-core
