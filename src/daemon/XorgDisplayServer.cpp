@@ -261,6 +261,9 @@ namespace SDDM {
         // create display setup script process
         QProcess *displayScript = new QProcess();
 
+        const QString xcursorTheme = mainConfig.Theme.CursorTheme.get(),
+                      xcursorSize = mainConfig.Theme.CursorSize.get();
+
         // set process environment
         QProcessEnvironment env;
         env.insert(QStringLiteral("DISPLAY"), m_display);
@@ -268,8 +271,8 @@ namespace SDDM {
         env.insert(QStringLiteral("PATH"), mainConfig.Users.DefaultPath.get());
         env.insert(QStringLiteral("XAUTHORITY"), m_xauth.authPath());
         env.insert(QStringLiteral("SHELL"), QStringLiteral("/bin/sh"));
-        env.insert(QStringLiteral("XCURSOR_THEME"), mainConfig.Theme.CursorTheme.get());
-        QString xcursorSize = mainConfig.Theme.CursorSize.get();
+        if (!xcursorTheme.isEmpty())
+            env.insert(QStringLiteral("XCURSOR_THEME"), xcursorTheme);
         if (!xcursorSize.isEmpty())
             env.insert(QStringLiteral("XCURSOR_SIZE"), xcursorSize);
         setCursor->setProcessEnvironment(env);
@@ -285,6 +288,24 @@ namespace SDDM {
         if (!setCursor->waitForFinished(1000)) {
             qWarning() << "Could not setup default cursor";
             setCursor->kill();
+        }
+
+        // Unlike libXcursor, xcb-util-cursor no longer looks at XCURSOR_*. Set the resources.
+        if (!xcursorTheme.isEmpty() || !xcursorSize.isEmpty()) {
+            QProcess xrdbProcess;
+            xrdbProcess.setProcessEnvironment(env);
+            xrdbProcess.start(QStringLiteral("xrdb"), QStringList{QStringLiteral("-nocpp"), QStringLiteral("-merge")});
+            if (!xcursorTheme.isEmpty())
+                xrdbProcess.write(QStringLiteral("Xcursor.theme: %1\n").arg(xcursorTheme).toUtf8());
+
+            if (!xcursorSize.isEmpty())
+                xrdbProcess.write(QStringLiteral("Xcursor.size: %1\n").arg(xcursorSize).toUtf8());
+
+            xrdbProcess.closeWriteChannel();
+            if (!xrdbProcess.waitForFinished(1000)) {
+                qDebug() << "Could not set Xcursor resources" << xrdbProcess.error();
+                xrdbProcess.kill();
+            }
         }
 
         // start display setup script
