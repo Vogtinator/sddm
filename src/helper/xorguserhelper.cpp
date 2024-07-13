@@ -148,7 +148,8 @@ bool XOrgUserHelper::startServer(const QString &cmd)
             << QStringLiteral("-displayfd") << QString::number(pipeFds[1]);
 
     // Append VT from environment
-    args << QStringLiteral("vt%1").arg(serverEnv.value(QStringLiteral("XDG_VTNR")));
+    if (!cmd.contains(QStringLiteral("Xephyr")))
+        args << QStringLiteral("vt%1").arg(serverEnv.value(QStringLiteral("XDG_VTNR")));
 
     // Command string
     serverCmd += QLatin1Char(' ') + args.join(QLatin1Char(' '));

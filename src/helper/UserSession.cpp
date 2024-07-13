@@ -184,6 +184,10 @@ namespace SDDM {
 #else
     void UserSession::setupChildProcess() {
 #endif
+        // TODO: Test mode
+        if (getuid() != 0)
+            return;
+
         // Session type
         QString sessionType = processEnvironment().value(QStringLiteral("XDG_SESSION_TYPE"));
         QString sessionClass = processEnvironment().value(QStringLiteral("XDG_SESSION_CLASS"));

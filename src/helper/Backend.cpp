@@ -28,6 +28,7 @@
 #include <QtCore/QProcessEnvironment>
 
 #include <pwd.h>
+#include <unistd.h>
 
 #if defined(Q_OS_FREEBSD)
 #include <sys/types.h>
@@ -42,7 +43,10 @@ namespace SDDM {
 
     Backend *Backend::get(HelperApp* parent)
     {
-        return new PamBackend(parent);
+        if  (getuid() == 0)
+            return new PamBackend(parent);
+        else
+            return new TestBackend(parent);
     }
 
     void Backend::setAutologin(bool on) {
@@ -124,5 +128,25 @@ namespace SDDM {
 
     bool Backend::closeSession() {
         return true;
+    }
+
+    TestBackend::TestBackend(HelperApp *parent)
+            : Backend(parent) {
+    }
+
+    TestBackend::~TestBackend() {
+    }
+
+    bool TestBackend::start(const QString &user) {
+        m_user = user;
+        return true;
+    }
+
+    bool TestBackend::authenticate() {
+        return true;
+    }
+
+    QString TestBackend::userName() {
+        return m_user;
     }
 }

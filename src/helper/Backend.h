@@ -54,6 +54,22 @@ namespace SDDM {
         bool m_displayServer = false;
         bool m_greeter { false };
     };
+
+    class TestBackend : public Backend
+    {
+        Q_OBJECT
+    public:
+        explicit TestBackend(HelperApp *parent);
+        virtual ~TestBackend();
+
+    public slots:
+        bool start(const QString &user = QString()) override;
+        bool authenticate() override;
+        QString userName() override;
+
+    private:
+        QString m_user;
+    };
 }
 
 #endif // BACKEND_H
