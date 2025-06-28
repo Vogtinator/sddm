@@ -164,9 +164,13 @@ namespace SDDM {
                 delete si;
             }
         }
+        QString lastSession = stateConfig.Last.Session.get();
+        if (lastSession.isEmpty())
+            lastSession = mainConfig.DefaultSession.get();
+
         // find out index of the last session
         for (int i = 0; i < d->sessions.size(); ++i) {
-            if (d->sessions.at(i)->fileName() == stateConfig.Last.Session.get()) {
+            if (d->sessions.at(i)->fileName() == lastSession) {
                 d->lastIndex = i;
                 break;
             }

@@ -69,6 +69,10 @@ OPTIONS
         or "compose" for dead keys support.
         Leave this empty if unsure.
 
+`DefaultSession=`
+    Path to session file that is selected by default if there is no
+    remembered last session.
+
 `Namespaces=`
 	Comma-separated list of paths bound to Linux namespaces to enter with
 	setns() before starting the user session.  For example, to enter network
